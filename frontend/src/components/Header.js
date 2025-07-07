@@ -1,78 +1,104 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const location = useLocation();
+  const [activeSection, setActiveSection] = useState('home');
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
+      
+      // Update active section based on scroll position
+      const sections = ['home', 'about', 'shop', 'lookbook', 'journal'];
+      const scrollPosition = window.scrollY + 100;
+      
+      sections.forEach(section => {
+        const element = document.getElementById(section);
+        if (element) {
+          const offsetTop = element.offsetTop;
+          const offsetBottom = offsetTop + element.offsetHeight;
+          
+          if (scrollPosition >= offsetTop && scrollPosition < offsetBottom) {
+            setActiveSection(section);
+          }
+        }
+      });
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const isActive = (path) => {
-    return location.pathname === path;
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+    setIsMobileMenuOpen(false);
+  };
+
+  const isActive = (section) => {
+    return activeSection === section;
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-      isScrolled ? 'bg-white/90 backdrop-blur-lg shadow-sm' : 'bg-transparent'
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
+      isScrolled ? 'bg-white/95 backdrop-blur-lg shadow-lg' : 'bg-transparent'
     }`}>
       <nav className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link 
-            to="/" 
-            className="text-2xl font-light tracking-wide text-black hover:opacity-70 transition-opacity duration-300"
+          <button 
+            onClick={() => scrollToSection('home')}
+            className="text-2xl font-light tracking-wide text-black hover:opacity-70 transition-all duration-500 transform hover:scale-105"
             style={{ fontFamily: 'Playfair Display, serif' }}
           >
             still.
-          </Link>
+          </button>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link
-              to="/about"
-              className={`text-sm font-light tracking-wide transition-all duration-300 hover:opacity-70 ${
-                isActive('/about') ? 'text-black opacity-100' : 'text-gray-600'
+            <button
+              onClick={() => scrollToSection('about')}
+              className={`text-sm font-light tracking-wide transition-all duration-500 hover:opacity-70 transform hover:scale-105 ${
+                isActive('about') ? 'text-black opacity-100 border-b border-black' : 'text-gray-600'
               }`}
             >
               About
-            </Link>
-            <Link
-              to="/shop"
-              className={`text-sm font-light tracking-wide transition-all duration-300 hover:opacity-70 ${
-                isActive('/shop') ? 'text-black opacity-100' : 'text-gray-600'
+            </button>
+            <button
+              onClick={() => scrollToSection('shop')}
+              className={`text-sm font-light tracking-wide transition-all duration-500 hover:opacity-70 transform hover:scale-105 ${
+                isActive('shop') ? 'text-black opacity-100 border-b border-black' : 'text-gray-600'
               }`}
             >
               Shop
-            </Link>
-            <Link
-              to="/lookbook"
-              className={`text-sm font-light tracking-wide transition-all duration-300 hover:opacity-70 ${
-                isActive('/lookbook') ? 'text-black opacity-100' : 'text-gray-600'
+            </button>
+            <button
+              onClick={() => scrollToSection('lookbook')}
+              className={`text-sm font-light tracking-wide transition-all duration-500 hover:opacity-70 transform hover:scale-105 ${
+                isActive('lookbook') ? 'text-black opacity-100 border-b border-black' : 'text-gray-600'
               }`}
             >
               Lookbook
-            </Link>
-            <Link
-              to="/journal"
-              className={`text-sm font-light tracking-wide transition-all duration-300 hover:opacity-70 ${
-                isActive('/journal') ? 'text-black opacity-100' : 'text-gray-600'
+            </button>
+            <button
+              onClick={() => scrollToSection('journal')}
+              className={`text-sm font-light tracking-wide transition-all duration-500 hover:opacity-70 transform hover:scale-105 ${
+                isActive('journal') ? 'text-black opacity-100 border-b border-black' : 'text-gray-600'
               }`}
             >
               Journal
-            </Link>
+            </button>
           </div>
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden text-black hover:opacity-70 transition-opacity duration-300"
+            className="md:hidden text-black hover:opacity-70 transition-all duration-500 transform hover:scale-110"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,36 +113,32 @@ const Header = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-gray-100">
+          <div className="md:hidden absolute top-full left-0 right-0 bg-white/98 backdrop-blur-lg border-t border-gray-100 animate-fade-in">
             <div className="px-6 py-4 space-y-4">
-              <Link
-                to="/about"
-                className="block text-sm font-light tracking-wide text-gray-600 hover:text-black transition-colors duration-300"
-                onClick={() => setIsMobileMenuOpen(false)}
+              <button
+                onClick={() => scrollToSection('about')}
+                className="block w-full text-left text-sm font-light tracking-wide text-gray-600 hover:text-black transition-all duration-500 transform hover:translate-x-2"
               >
                 About
-              </Link>
-              <Link
-                to="/shop"
-                className="block text-sm font-light tracking-wide text-gray-600 hover:text-black transition-colors duration-300"
-                onClick={() => setIsMobileMenuOpen(false)}
+              </button>
+              <button
+                onClick={() => scrollToSection('shop')}
+                className="block w-full text-left text-sm font-light tracking-wide text-gray-600 hover:text-black transition-all duration-500 transform hover:translate-x-2"
               >
                 Shop
-              </Link>
-              <Link
-                to="/lookbook"
-                className="block text-sm font-light tracking-wide text-gray-600 hover:text-black transition-colors duration-300"
-                onClick={() => setIsMobileMenuOpen(false)}
+              </button>
+              <button
+                onClick={() => scrollToSection('lookbook')}
+                className="block w-full text-left text-sm font-light tracking-wide text-gray-600 hover:text-black transition-all duration-500 transform hover:translate-x-2"
               >
                 Lookbook
-              </Link>
-              <Link
-                to="/journal"
-                className="block text-sm font-light tracking-wide text-gray-600 hover:text-black transition-colors duration-300"
-                onClick={() => setIsMobileMenuOpen(false)}
+              </button>
+              <button
+                onClick={() => scrollToSection('journal')}
+                className="block w-full text-left text-sm font-light tracking-wide text-gray-600 hover:text-black transition-all duration-500 transform hover:translate-x-2"
               >
                 Journal
-              </Link>
+              </button>
             </div>
           </div>
         )}
